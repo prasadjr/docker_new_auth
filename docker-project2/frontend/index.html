@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            color: #f44336;
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Authentication</h1>
+    <div id="auth-container">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="login-button">Login</button>
+        <button id="signup-button">Sign Up</button>
+        <div class="message" id="message"></div>
+        <div class="link" id="toggle-link"></div>
+    </div>
+</div>
+
+<script>
+    const loginButton = document.getElementById('login-button');
+    const signupButton = document.getElementById('signup-button');
+    const messageElement = document.getElementById('message');
+    const toggleLink = document.getElementById('toggle-link');
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    const apiUrl = 'http://localhost:3000';
+
+    // Switch between Login and Signup forms
+    signupButton.style.display = 'none';
+    toggleLink.innerHTML = `<a href="#" onclick="toggleForm()">Don't have an account? Sign up</a>`;
+
+    function toggleForm() {
+        if (loginButton.style.display === 'none') {
+            loginButton.style.display = 'inline-block';
+            signupButton.style.display = 'none';
+            toggleLink.innerHTML = `<a href="#" onclick="toggleForm()">Don't have an account? Sign up</a>`;
+        } else {
+            loginButton.style.display = 'none';
+            signupButton.style.display = 'inline-block';
+            toggleLink.innerHTML = `<a href="#" onclick="toggleForm()">Already have an account? Login</a>`;
+        }
+        messageElement.textContent = '';
+    }
+
+    // Handle Login
+    loginButton.addEventListener('click', async () => {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        const response = await fetch(`${apiUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            messageElement.textContent = 'Login successful!';
+            messageElement.classList.add('success');
+        } else {
+            messageElement.textContent = data.message;
+        }
+    });
+
+    // Handle Sign Up
+    signupButton.addEventListener('click', async () => {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        const response = await fetch(`${apiUrl}/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            messageElement.textContent = 'Sign up successful!';
+            messageElement.classList.add('success');
+            toggleForm();
+        } else {
+            messageElement.textContent = data.message;
+        }
+    });
+</script>
+
+</body>
+</html>
+
